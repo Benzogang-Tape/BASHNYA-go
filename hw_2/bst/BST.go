@@ -1,4 +1,4 @@
-package main
+package bst
 
 type BST struct {
 	data  int
@@ -19,7 +19,7 @@ func (bst *BST) Add(data int) {
 			}
 			root = root.left
 		}
-		if data > root.data && root.right != nil {
+		if data > root.data {
 			if root.right == nil {
 				root.right = &BST{data: data, left: nil, right: nil}
 				break
@@ -85,6 +85,7 @@ func (bst *BST) Delete(data int) {
 		} else {
 			if cur.left != nil {
 				root.data = cur.left.data
+				root.right = cur.left.right
 				root.left = cur.left.left
 			} else {
 				root = cur.left
@@ -106,6 +107,18 @@ func (bst *BST) Delete(data int) {
 			parent.right = min.right
 		}
 	}
+}
+
+func PreOrderTraversal(bst *BST, data *[]int) {
+	if bst != nil {
+		*data = append(*data, bst.data)
+		PreOrderTraversal(bst.left, data)
+		PreOrderTraversal(bst.right, data)
+	}
+}
+
+func (bst *BST) Rebalance(data []int) *BST {
+	return nil
 }
 
 func NewBST(data int) *BST {
