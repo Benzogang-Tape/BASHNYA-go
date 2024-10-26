@@ -14,6 +14,9 @@ var (
 	errBadNumber      = errors.New("bad number")
 )
 
+// Calc вычисляет значение выражения, заданного строкой.
+// Возвращает результат вычисления или ошибку, если выражение некорректно.
+// Пример: "1.23 + 54 * (6/7 * (9 - 8))" -> 47.51571428571428, nil
 func Calc(expression string) (float64, error) {
 	rpn := toRPN(tokenizeExpression(expression))
 	res, err := calc(rpn)
@@ -68,13 +71,16 @@ func calc(rpn []string) (float64, error) {
 	return stack[0], nil
 }
 
+// tokenizeExpression разбивает строку выражения на отдельные токены.
+// Токены могут быть числами, операторами или скобками.
+// Пример: "1.23 + 54 * (6/7 * (9 - 8))" ->
+// []string{"1.23", "+", "54", "*", "(", "6", "/", "7", "*", "(", "9", "-", "8", ")", ")"}
 func tokenizeExpression(expression string) []string {
 	tokens := make([]string, 0, utf8.RuneCountInString(expression))
 	number := make([]string, 0, utf8.RuneCountInString(expression))
+	expression = strings.Replace(expression, " ", "", -1)
+
 	for _, char := range strings.Split(expression, "") {
-		if char == " " {
-			continue
-		}
 		if ((char >= "0") && (char <= "9")) || char == "." || char == "," {
 			number = append(number, char)
 			continue
@@ -85,7 +91,9 @@ func tokenizeExpression(expression string) []string {
 		}
 		tokens = append(tokens, char)
 	}
-	tokens = append(tokens, strings.Join(number, ""))
+	if len(number) > 0 {
+		tokens = append(tokens, strings.Join(number, ""))
+	}
 	return tokens
 }
 
@@ -99,6 +107,11 @@ func operatorPriority(op string) int {
 	return 0
 }
 
+//
+
+// toRPN преобразует инфиксное выражение в обратную польскую нотацию (ОПН).
+// Пример: []string{"1.23", "+", "54", "*", "(", "6", "/", "7", "*", "(", "9", "-", "8", ")", ")"} ->
+// []string{"1.23", "54", "6", "7", "/", "9", "8", "-", "*", "*", "+"}
 func toRPN(tokens []string) []string {
 	stack := make([]string, 0, len(tokens))
 	rpnTokens := make([]string, 0, len(tokens))
